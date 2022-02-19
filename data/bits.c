@@ -243,7 +243,6 @@ int logicalNeg(int x) {
     bit = bit >> 2 | bit;
     bit = bit >> 1 | bit;
     return 0x01 & (~bit);
-    // OR
     // return ((x | (~x + 1)) >> 31) + 1;
 }
 /* howManyBits - return the minimum number of bits required to represent x in
@@ -263,18 +262,22 @@ int howManyBits(int x) {
     int result = 1;
     int flag, half;
     x = (~sign & x) | (sign & ~x);
+
     flag = (~!(x >> 16) + 1);
     half = 0xff << 8 | 0xff;
     result += ~flag & 16;
     x = (flag & x & half) | (~flag & (x >> 16));
+
     flag = (~!(x >> 8) + 1);
     half = 0xff;
     result += ~flag & 8;
     x = (flag & x & half) | (~flag & (x >> 8));
+
     flag = (~!(x >> 4) + 1);
     half = 0x0f;
     result += ~flag & 4;
     x = (flag & x & half) | (~flag & (x >> 4));
+
     flag = (~!(x >> 2) + 1);
     half = 0x03;
     result += ~flag & 2;
@@ -349,8 +352,7 @@ int floatFloat2Int(unsigned uf) {
     int sign = (uf >> 31) << 31;
     int bias = 0x7f;
     int e = exp - bias;
-
-    if (exp >= bias + 31) {
+    if (e >= 31) {
         return 0x80 << 24;
     } else if (bias >= exp + 1) {
         return 0;
@@ -382,45 +384,15 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-    int exp = 0x7f;
-    int frac = 0x00;
-    int flag = 1;
-    while (x != 0) {
-        if (x == (0x80 << 24)) {
-            return 0;
-        }
-        if (x > 0)
-            if (exp == 0xff) {
-                break;
-            } else {
-                exp += 1;
-                x = x - 1;
-            }
-        else {
-            if (exp == 0x00) {
-                if (frac == 0x00 && flag) {
-                    frac = 0x80 << 24;
-                    x = x + 1;
-                } else if (frac == 0x00) {
-                    break;
-                } else {
-                    frac - frac >> 1;
-                    x = x + 1;
-                    flag = 0;
-                }
-            } else {
-                exp -= 1;
-                x = x + 1;
-            }
-        }
+    int INF = 0xff << 23;
+    int exp = x + 0x7f;
+    if (exp >= -23 && exp < 0) {
+        return (0x01 << 23) >> (~exp + 1);
+    } else if (exp < -23) {
+        return 0;
+    } else if (exp >= 0xff) {
+        return INF;
+    } else {
+        return exp << 23;
     }
-    return exp << 23 | frac;
-    //   int INF = 0xff << 23;
-    //   int exp = x + 0x7f;
-    //   if (exp < 0 && exp > -24)  // 23 是frac部分的位数
-    //     return 0x00040000 >> (~exp + 1);
-    //   else if (exp < -23)
-    //     return 0;
-    //   if (exp >= 0xff) return INF;
-    //   return exp << 23;
 }

@@ -142,9 +142,9 @@ NOTES:
  *   Rating: 1
  */
 int bitXor(int x, int y) {
-  int m = x & ~y;
-  int n = ~x & y;
-  return ~(~m & ~n);
+    int m = x & ~y;
+    int n = ~x & y;
+    return ~(~m & ~n);
 }
 /*
  * tmin - return minimum two's complement integer
@@ -162,9 +162,9 @@ int tmin(void) { return 0x80 << 24; }
  *   Rating: 1
  */
 int isTmax(int x) {
-  int m = ~(x ^ (x + 1));
-  int n = !!(~x);
-  return (!m) & n;
+    int m = ~(x ^ (x + 1));
+    int n = !!(~x);
+    return (!m) & n;
 }
 /*
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -175,9 +175,9 @@ int isTmax(int x) {
  *   Rating: 2
  */
 int allOddBits(int x) {
-  int m = 0x55 | 0x55 << 8;
-  m = m << 16 | m;
-  return !(~(m | x));
+    int m = 0x55 | 0x55 << 8;
+    m = m << 16 | m;
+    return !(~(m | x));
 }
 /*
  * negate - return -x
@@ -197,8 +197,8 @@ int negate(int x) { return ~x + 1; }
  *   Rating: 3
  */
 int isAsciiDigit(int x) {
-  x = x ^ 0x38;
-  return !(x >> 1) | !((x >> 3) ^ 0x01);
+    x = x ^ 0x38;
+    return !(x >> 1) | !((x >> 3) ^ 0x01);
 }
 /*
  * conditional - same as x ? y : z
@@ -208,8 +208,8 @@ int isAsciiDigit(int x) {
  *   Rating: 3
  */
 int conditional(int x, int y, int z) {
-  int cond = ~!x + 1;
-  return ((~cond) & y) | (cond & z);
+    int cond = ~!x + 1;
+    return ((~cond) & y) | (cond & z);
 }
 /*
  * isLessOrEqual - if x <= y  then return 1, else return 0
@@ -219,13 +219,13 @@ int conditional(int x, int y, int z) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  int min = 0x80 << 24;
-  int result1 = !(x ^ min);
-  int sign_x = ((x ^ y) & x) >> 31;
-  int sign_y = ((x ^ y) & y) >> 31;
-  int result2 = !(~sign_x | sign_y);
-  int result3 = !((sign_x ^ sign_y) | ((~x + 1) + y) >> 31);
-  return result1 | result2 | result3;
+    int min = 0x80 << 24;
+    int result1 = !(x ^ min);
+    int sign_x = ((x ^ y) & x) >> 31;
+    int sign_y = ((x ^ y) & y) >> 31;
+    int result2 = !(~sign_x | sign_y);
+    int result3 = !((sign_x ^ sign_y) | ((~x + 1) + y) >> 31);
+    return result1 | result2 | result3;
 }
 // 4
 /*
@@ -237,14 +237,14 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4
  */
 int logicalNeg(int x) {
-  int bit = x >> 16 | x;
-  bit = bit >> 8 | bit;
-  bit = bit >> 4 | bit;
-  bit = bit >> 2 | bit;
-  bit = bit >> 1 | bit;
-  return 0x01 & (~bit);
-  // OR
-  // return ((x | (~x + 1)) >> 31) + 1;
+    int bit = x >> 16 | x;
+    bit = bit >> 8 | bit;
+    bit = bit >> 4 | bit;
+    bit = bit >> 2 | bit;
+    bit = bit >> 1 | bit;
+    return 0x01 & (~bit);
+    // OR
+    // return ((x | (~x + 1)) >> 31) + 1;
 }
 /* howManyBits - return the minimum number of bits required to represent x in
  *             two's complement
@@ -259,49 +259,49 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-  int sign = x >> 31;
-  int result = 1;
-  int flag, half;
-  x = (~sign & x) | (sign & ~x);
-  flag = (~!(x >> 16) + 1);
-  half = 0xff << 8 | 0xff;
-  result += ~flag & 16;
-  x = (flag & x & half) | (~flag & (x >> 16));
-  flag = (~!(x >> 8) + 1);
-  half = 0xff;
-  result += ~flag & 8;
-  x = (flag & x & half) | (~flag & (x >> 8));
-  flag = (~!(x >> 4) + 1);
-  half = 0x0f;
-  result += ~flag & 4;
-  x = (flag & x & half) | (~flag & (x >> 4));
-  flag = (~!(x >> 2) + 1);
-  half = 0x03;
-  result += ~flag & 2;
-  x = (flag & x & half) | (~flag & (x >> 2));
+    int sign = x >> 31;
+    int result = 1;
+    int flag, half;
+    x = (~sign & x) | (sign & ~x);
+    flag = (~!(x >> 16) + 1);
+    half = 0xff << 8 | 0xff;
+    result += ~flag & 16;
+    x = (flag & x & half) | (~flag & (x >> 16));
+    flag = (~!(x >> 8) + 1);
+    half = 0xff;
+    result += ~flag & 8;
+    x = (flag & x & half) | (~flag & (x >> 8));
+    flag = (~!(x >> 4) + 1);
+    half = 0x0f;
+    result += ~flag & 4;
+    x = (flag & x & half) | (~flag & (x >> 4));
+    flag = (~!(x >> 2) + 1);
+    half = 0x03;
+    result += ~flag & 2;
+    x = (flag & x & half) | (~flag & (x >> 2));
 
-  flag = (~!(x >> 1) + 1);
-  half = 0x01;
-  result += ~flag & 1;
-  x = (flag & x & half) | (~flag & (x >> 1));
-  return result + x;
+    flag = (~!(x >> 1) + 1);
+    half = 0x01;
+    result += ~flag & 1;
+    x = (flag & x & half) | (~flag & (x >> 1));
+    return result + x;
 
-  // OR
-  // int b16, b8, b4, b2, b1, b0;
-  // int sign = x >> 31;
-  // x = (sign & ~x) |(~sign & x);
-  // b16 = !!(x >> 16) << 4; //高十六位是否有1
-  // x = x >> b16;           //如果有，则将原数右移16位
-  // b8 = !!(x >> 8) << 3;
-  // x = x >> b8;
-  // b4 = !!(x >> 4) << 2;
-  // x = x >> b4;
-  // b2 = !!(x >> 2) << 1;
-  // x = x >> b2;
-  // b1 = !!(x >> 1);
-  // x = x >> b1;
-  // b0 = x;
-  // return b16 + b8 + b4 + b2 + b1 + b0 + 1; //+1表示加上符号位
+    // OR
+    // int b16, b8, b4, b2, b1, b0;
+    // int sign = x >> 31;
+    // x = (sign & ~x) |(~sign & x);
+    // b16 = !!(x >> 16) << 4; //高十六位是否有1
+    // x = x >> b16;           //如果有，则将原数右移16位
+    // b8 = !!(x >> 8) << 3;
+    // x = x >> b8;
+    // b4 = !!(x >> 4) << 2;
+    // x = x >> b4;
+    // b2 = !!(x >> 2) << 1;
+    // x = x >> b2;
+    // b1 = !!(x >> 1);
+    // x = x >> b1;
+    // b0 = x;
+    // return b16 + b8 + b4 + b2 + b1 + b0 + 1; //+1表示加上符号位
 }
 // float
 /*
@@ -316,19 +316,19 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned floatScale2(unsigned uf) {
-  int pos = (0x7f << 24) | (0x80 << 16);
-  int exp = (uf & pos) >> 23;
-  int sign;
+    int pos = (0x7f << 24) | (0x80 << 16);
+    int exp = (uf & pos) >> 23;
+    int sign;
 
-  if (exp == 0xff || !(uf & (~(0x01 << 31)))) {
-    return uf;
-  } else if (exp == 0x00) {
-    sign = (uf >> 31) << 31;
-    return ((uf & ~sign) << 1) | sign;
-  } else {
-    exp += 1;
-    return (uf & ~pos) | (exp << 23);
-  }
+    if (exp == 0xff || !(uf & (~(0x01 << 31)))) {
+        return uf;
+    } else if (exp == 0x00) {
+        sign = (uf >> 31) << 31;
+        return ((uf & ~sign) << 1) | sign;
+    } else {
+        exp += 1;
+        return (uf & ~pos) | (exp << 23);
+    }
 }
 /*
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
@@ -343,28 +343,30 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
-  int pos = (0x7f << 24) | (0x80 << 16);
-  int exp = (uf & pos) >> 23;
-  int frac = ~((0xff << 24) | (0x80 << 16)) & uf;
-  int sign = (uf >> 31) << 31;
-  int bias = 0x7f;
-  int e = exp - bias;
+    int pos = (0x7f << 24) | (0x80 << 16);
+    int exp = (uf & pos) >> 23;
+    int frac = ~((0xff << 24) | (0x80 << 16)) & uf;
+    int sign = (uf >> 31) << 31;
+    int bias = 0x7f;
+    int e = exp - bias;
 
-  if (exp >= bias + 31)
-    return 0x80 << 24;
-  else if (bias >= exp + 1)
-    return 0;
-  else {
-    frac = frac | (0x01 << 23);
-    if (e < 23)
-      frac = frac >> (23 - e);
-    else
-      frac = frac << (e - 23);
-    if (sign)
-      return -frac;
-    else
-      return frac;
-  }
+    if (exp >= bias + 31) {
+        return 0x80 << 24;
+    } else if (bias >= exp + 1) {
+        return 0;
+    } else {
+        frac = frac | (0x01 << 23);
+        if (e < 23) {
+            frac = frac >> (23 - e);
+        } else {
+            frac = frac << (e - 23);
+        }
+        if (sign) {
+            return -frac;
+        } else {
+            return frac;
+        }
+    }
 }
 /*
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
@@ -380,44 +382,45 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-  int exp = 0x7f;
-  int frac = 0x00;
-  int flag = 1;
-  while (x != 0) {
-    if (x == (0x80 << 24)) return 0;
-    if (x > 0)
-      if (exp == 0xff)
-        break;
-      else {
-        exp += 1;
-        x = x - 1;
-      }
-    else {
-      if (exp == 0x00) {
-        if (frac == 0x00 && flag) {
-          frac = 0x80 << 24;
-          x = x + 1;
-        } else if (frac == 0x00)
-          break;
-        else {
-          frac - frac >> 1;
-          x = x + 1;
-          flag = 0;
+    int exp = 0x7f;
+    int frac = 0x00;
+    int flag = 1;
+    while (x != 0) {
+        if (x == (0x80 << 24)) {
+            return 0;
         }
-      } else {
-        exp -= 1;
-        x = x + 1;
-      }
+        if (x > 0)
+            if (exp == 0xff) {
+                break;
+            } else {
+                exp += 1;
+                x = x - 1;
+            }
+        else {
+            if (exp == 0x00) {
+                if (frac == 0x00 && flag) {
+                    frac = 0x80 << 24;
+                    x = x + 1;
+                } else if (frac == 0x00) {
+                    break;
+                } else {
+                    frac - frac >> 1;
+                    x = x + 1;
+                    flag = 0;
+                }
+            } else {
+                exp -= 1;
+                x = x + 1;
+            }
+        }
     }
-  }
-  return exp << 23 | frac;
-
-//   int INF = 0xff << 23;
-//   int exp = x + 0x7f;
-//   if (exp < 0 && exp > -24)  // 23 是frac部分的位数
-//     return 0x00040000 >> (~exp + 1);
-//   else if (exp < -23)
-//     return 0;
-//   if (exp >= 0xff) return INF;
-//   return exp << 23;
+    return exp << 23 | frac;
+    //   int INF = 0xff << 23;
+    //   int exp = x + 0x7f;
+    //   if (exp < 0 && exp > -24)  // 23 是frac部分的位数
+    //     return 0x00040000 >> (~exp + 1);
+    //   else if (exp < -23)
+    //     return 0;
+    //   if (exp >= 0xff) return INF;
+    //   return exp << 23;
 }

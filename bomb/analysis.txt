@@ -1,0 +1,147 @@
+phase2
+rsi = rsp =  0x7fffffffe4b0
+read_six_numbers
+0x1 = (rsp)
+
+read_six_numbers
+rsp  = rsp - 18 = 0x7fffffffe490
+rdx = rsi =  0x7fffffffe4b0 (arg3 )
+rcx = rsi + 0x04 = 0x7fffffffe4b4;(arg4)
+rax = rsi + 0x14 = 0x7fffffffe4c4
+(rsp+0x8) = rax= 0x7fffffffe4c4 (arg8)
+rax = rsi + 0x10 = 0x7fffffffe490
+(rsp) = rax = 0x7fffffffe4c0 (arg7)
+r9 = rsi + 0x0c =   0x7fffffffe4bc (arg6)
+r8 = rsi + 0x08 =  0x7fffffffe4b8 (arg5)
+rsi = 0x4025c3(%d %d %d %d %d %d)
+
+eax = 0x6
+rbx = rsp + 4 = 0x7fffffffe4b4
+rbp = rsp + 0x18 = 0x7fffffffe4c8
+
+eax = (rbx - 4) = (rsp) = 1
+(rbx) = 2
+
+0x7fffffffe4b8
+
+arg3:1
+arg4:2
+
+
+phase3
+switch
+%d %d
+rcx arg4 0x2c3 707
+rdx arg3 < 7 = 2
+
+x /7xg 0x402478
+0x402478:       0x0000000000400fb9      0x0000000000400f83
+0x402488:       0x0000000000400f8a      0x0000000000400f91
+0x402498:       0x0000000000400f98      0x0000000000400f9f
+0x4024a8:       0x0000000000400fa6
+
+
+phase4
+sscanf
+rcx arg4 = 0xc(%rsp)
+rdx arg3 =  0x8(%rsp)  <= 0x0e
+
+arg3 rdx = 0x0e
+arg2 rsi = 0
+arg1 rdi =  0x8(%rsp) 
+
+func4
+rax = rdx  = 0x0e 
+rax = rax - rsi = 0x0e  
+rcx = rax = 0x0e
+rcx >> 31 = 0
+rax = rax + rcx = 0x0e
+rax = rax >> 1 = 0x07
+rcx = rax + rsi = 7  +0 = 0x07
+
+if rcx <= rdi :
+    eax = 0
+    if rcx >= rdi :
+        return
+    else:
+        rsi = rcx + 1
+        func4
+else:
+    rdx = rcx - 1
+    func4
+
+
+phase5
+rbx = rdi
+rax  = 0 1 2 3 4 5
+rcx = (rbx + rax)最低byte; (字符串头)
+rdx = cl(rcx 最低byte);
+rdx = (rdx + 0x4024b0)最低byte; (字符串数组访问)
+0x4024b0 <array> "maduiersnfotvbylSo you think you can stop the bomb with ctrl-c, do you?"
+9 f e 5 6 7
+  o n
+(rsp + rax + 0x10) = dl;  
+rsp + 10 ~ rsp + 15 = 40245e
+===
+movb   $0x0,0x16(%rsp)
+%esi = (0x40245e) = flyers
+%rdi = 0x10 + %rsp
+
+
+phase6
+4 3 2 1 6 5 
+@source: https://www.zhihu.com/column/c_1091377491578523648
+
+r13 = rsp
+rsi = rsp
+r14 = rsp
+r12 = 0
+32line:
+    rbp = r13
+    rax = (r13)
+    rax = rax - 1
+    if (rax <= 5) { ------> (arg7 <= 6)
+        r12 = r12 + 1 = 1;
+        if (r12 == 6) {
+            rsi = rsp + 0x18
+            rax = r14
+            rcx = 0x07
+   line108: rdx = rcx
+            rdx = rdx - (rax)
+            (rax) = edx
+            rax = rax + 4
+            if (rsi != rax) {
+                goto line108
+            } else {
+                esi = 0;
+            }
+        } else {
+            rbx  = r12 
+            do {
+                rax = rbx 
+                rax = (rsp + rax * 4)
+                if (rax != (rbp)) {
+                    rbx = rbx + 1 // = 2
+                } else {
+                    explode
+                }
+            } while(rbx <= 5);
+        }
+    } else {
+        explode
+    }
+    r13 = r13 + 4
+    goto 32line;
+
+read_six_numbers
+rsp  = rsp - 18 =
+rdx = rsi =   (arg3 )
+rcx = rsi + 0x04 = (arg4)
+rax = rsi + 0x14 = 
+(rsp+0x8) = rax=  (arg8)
+rax = rsi + 0x10 =
+(rsp) = rax =  (arg7)
+r9 = rsi + 0x0c =   (arg6)
+r8 = rsi + 0x08 = (arg5)
+rsi = 0x4025c3(%d %d %d %d %d %d)
+rsp  = rsp + 18

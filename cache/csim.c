@@ -9,7 +9,6 @@
 typedef unsigned long long uint64_t;
 
 typedef struct CacheLine {
-    bool valid;
     uint64_t tag;
     unsigned counter;
 } cacheLine;
@@ -74,7 +73,6 @@ int main(int argc, char *argv[]) {
         for (int j = 0; j < lines; j++) {
             cache[i][j].counter = 0;
             cache[i][j].tag = 0;
-            cache[i][j].valid = false;
         }
         cacheLineSize[i] = 0;
     }
@@ -99,7 +97,7 @@ int main(int argc, char *argv[]) {
         }
         if (identifier == 'L' || identifier == 'S') {
             // can create a function, input: address, cache; output: void
-            //
+            // use static int to count hit, miss, evict. Or use a array.
             uint64_t set = getSet(address, b, s);
             uint64_t tag = getTag(address, b, s);
             int lineSize = cacheLineSize[set];
@@ -125,7 +123,7 @@ int main(int argc, char *argv[]) {
                     }
                     evictions++;
                     misses++;
-                    cacheLine line = {true, tag, 0};
+                    cacheLine line = {tag, 0};
                     cache[set][max] = line;
                     printf(" miss eviction\n");
                 }
@@ -143,7 +141,7 @@ int main(int argc, char *argv[]) {
                     printf(" hit\n");
                 } else {
                     misses++;
-                    cacheLine line = {true, tag, 0};
+                    cacheLine line = {tag, 0};
                     cache[set][lineSize] = line;
                     cacheLineSize[set]++;
                     printf(" miss\n");
@@ -175,7 +173,7 @@ int main(int argc, char *argv[]) {
                     }
                     evictions++;
                     misses++;
-                    cacheLine line = {true, tag, 0};
+                    cacheLine line = {tag, 0};
                     cache[set][max] = line;
                     printf(" miss eviction");
                 }
@@ -193,7 +191,7 @@ int main(int argc, char *argv[]) {
                     printf(" hit");
                 } else {
                     misses++;
-                    cacheLine line = {true, tag, 0};
+                    cacheLine line = {tag, 0};
                     cache[set][lineSize] = line;
                     cacheLineSize[set]++;
                     printf(" miss");

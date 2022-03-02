@@ -169,6 +169,6 @@ int main(int argc, char *argv[]) {
         free(cacheLineSize);
         cacheLineSize = NULL;
     }
-    // printSummary(0, 0, 0);
+    printSummary(0, 0, 0);
     exit(EXIT_SUCCESS);
 }

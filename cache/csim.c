@@ -90,13 +90,12 @@ int main(int argc, char *argv[]) {
     int size;
 
     int hits = 0, misses = 0, evictions = 0;
-    int fullSize = lines;
-    while (fscanf(pFile, " %c %x,%d", &identifier, &address, &size) != EOF) {
+    while (fscanf(pFile, " %c %llx,%d", &identifier, &address, &size) != EOF) {
         if (identifier == 'I') {
             continue;
         }
         if (verbose) {
-            printf("%c %x,%d", identifier, address, size);
+            printf("%c %llx,%d", identifier, address, size);
         }
         // load : hit || has empty: miss, load | full: eviction + miss, load
         // store : hit || has empty: miss, load | full: eviction + miss, load
@@ -106,8 +105,8 @@ int main(int argc, char *argv[]) {
             uint64_t tag = getTag(address, b, s);
             int lineSize = cacheLineSize[set];
             bool found = false;
-            if (lineSize == fullSize) {
-                for (int i = 0; i < fullSize; ++i) {
+            if (lineSize == lines) {
+                for (int i = 0; i < lines; ++i) {
                     if (cache[set][i].tag == tag) {
                         hits++;
                         cache[set][i].counter = 0;
@@ -131,7 +130,7 @@ int main(int argc, char *argv[]) {
                     cache[set][max] = line;
                     printf(" miss eviction\n");
                 }
-            } else if (lineSize < fullSize) {
+            } else if (lineSize < lines) {
                 for (int i = 0; i < lineSize; ++i) {
                     if (cache[set][i].tag == tag) {
                         hits++;
@@ -145,12 +144,72 @@ int main(int argc, char *argv[]) {
                     printf(" hit\n");
                 } else {
                     misses++;
-                    cacheLineSize[set]++;
                     cacheLine line = {true, tag, 0};
-                    cache[set][lineSize + 1] = line;
+                    cache[set][lineSize] = line;
+                    cacheLineSize[set]++;
                     printf(" miss\n");
                 }
             }
+        } else if (identifier == 'M') {
+            uint64_t set = getSet(address, b, s);
+            uint64_t tag = getTag(address, b, s);
+            int lineSize = cacheLineSize[set];
+            bool found = false;
+            if (lineSize == lines) {
+                for (int i = 0; i < lines; ++i) {
+                    if (cache[set][i].tag == tag) {
+                        hits++;
+                        cache[set][i].counter = 0;
+                        found = true;
+                    } else {
+                        cache[set][i].counter++;
+                    }
+                }
+                if (found) {
+                    printf(" hit");
+                } else {
+                    int max = 0;
+                    for (int i = 0; i < lines; ++i) {
+                        if (cache[set][i].counter > cache[set][max].counter) {
+                            max = i;
+                        }
+                    }
+                    evictions++;
+                    misses++;
+                    cacheLine line = {true, tag, 0};
+                    cache[set][max] = line;
+                    printf(" miss eviction");
+                }
+            } else if (lineSize < lines) {
+                for (int i = 0; i < lineSize; ++i) {
+                    if (cache[set][i].tag == tag) {
+                        hits++;
+                        cache[set][i].counter = 0;
+                        found = true;
+                    } else {
+                        cache[set][i].counter++;
+                    }
+                }
+                if (found) {
+                    printf(" hit");
+                } else {
+                    misses++;
+                    cacheLine line = {true, tag, 0};
+                    cache[set][lineSize] = line;
+                    cacheLineSize[set]++;
+                    printf(" miss");
+                }
+            }
+            lineSize = cacheLineSize[set];
+            for (int i = 0; i < lines && i < lineSize; ++i) {
+                if (cache[set][i].tag == tag) {
+                    hits++;
+                    cache[set][i].counter = 0;
+                } else {
+                    cache[set][i].counter++;
+                }
+            }
+            printf(" hit\n");
         }
     }
 
@@ -159,16 +218,14 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
     if (cache != NULL) {
-        for (int i = 0; i < lines; i++) {
+        for (int i = 0; i < S; i++) {
             free(cache[i]);
         }
         free(cache);
-        cache = NULL;
     }
     if (cacheLineSize != NULL) {
         free(cacheLineSize);
-        cacheLineSize = NULL;
     }
-    printSummary(0, 0, 0);
+    printSummary(hits, misses, evictions);
     exit(EXIT_SUCCESS);
 }

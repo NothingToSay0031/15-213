@@ -97,10 +97,9 @@ int main(int argc, char *argv[]) {
         if (verbose) {
             printf("%c %llx,%d", identifier, address, size);
         }
-        // load : hit || has empty: miss, load | full: eviction + miss, load
-        // store : hit || has empty: miss, load | full: eviction + miss, load
-        // modify = load + store
         if (identifier == 'L' || identifier == 'S') {
+            // can create a function, input: address, cache; output: void
+            //
             uint64_t set = getSet(address, b, s);
             uint64_t tag = getTag(address, b, s);
             int lineSize = cacheLineSize[set];

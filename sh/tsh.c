@@ -345,7 +345,7 @@ void sigchld_handler(int sig) {
             flag = pid;
         } else if (WIFSIGNALED(status)) {
             Sio_printf("Job [%d] (%d) terminated by signal %d\n",
-                   getjobpid(jobs, pid)->jid, pid, WTERMSIG(status));
+                       getjobpid(jobs, pid)->jid, pid, WTERMSIG(status));
             deletejob(jobs, pid); /* Delete the child from the job list */
             flag = pid;
         }

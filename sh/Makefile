@@ -12,7 +12,7 @@ FILES = $(TSH) ./myspin ./mysplit ./mystop ./myint
 all: $(FILES)
 
 tsh: tsh.c sio_printf.c csapp.c
-	$(CC) $(CFLAGS) -o -I. tsh.c sio_printf.c csapp.c
+	$(CC) $(CFLAGS) -o tsh tsh.c sio_printf.c csapp.c
 ##################
 # Handin your work
 ##################

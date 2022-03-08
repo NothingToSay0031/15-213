@@ -1,57 +1,22 @@
 /*
- * mm-naive.c - The fastest, least memory-efficient malloc package.
- *
- * In this naive approach, a block is allocated by simply incrementing
- * the brk pointer.  Blocks are never coalesced or reused.  The size of
- * a block is found at the first aligned word before the block (we need
- * it for realloc).
- *
- * This code is correct and blazingly fast, but very bad usage-wise since
- * it never frees anything.
+ * Simple, 32-bit and 64-bit clean allocator based on implicit free
+ * lists, first-fit placement, and boundary tag coalescing, as described
+ * in the CS:APP3e text. Blocks must be aligned to doubleword (8 byte)
+ * boundaries. Minimum block size is 16 bytes.
  */
-#include <assert.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+#include <stdlib.h>
 
 #include "mm.h"
 #include "memlib.h"
-
-/* If you want debugging output, use the following macro.  When you hand
- * in, remove the #define DEBUG line. */
-#define DEBUG
-#ifdef DEBUG
-# define dbg_printf(...) printf(__VA_ARGS__)
-#else
-# define dbg_printf(...)
-#endif
-
-
-/* do not change the following! */
-#ifdef DRIVER
-/* create aliases for driver tests */
-#define malloc mm_malloc
-#define free mm_free
-#define realloc mm_realloc
-#define calloc mm_calloc
-#endif /* def DRIVER */
-
-/* single word (4) or double word (8) alignment */
-#define ALIGNMENT 8
-
-/* rounds up to the nearest multiple of ALIGNMENT */
-#define ALIGN(size) (((size) + (ALIGNMENT-1)) & ~0x7)
-
-
-#define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
-
-#define SIZE_PTR(p)  ((size_t*)(((char*)(p)) - SIZE_T_SIZE))
 
 /*
  * If NEXT_FIT defined use next fit search, else use first-fit search
  */
 #define NEXT_FITx
+
+/* $begin mallocmacros */
 /* Basic constants and macros */
 #define WSIZE       4       /* Word and header/footer size (bytes) */ //line:vm:mm:beginconst
 #define DSIZE       8       /* Double word size (bytes) */
@@ -77,13 +42,14 @@
 /* Given block ptr bp, compute address of next and previous blocks */
 #define NEXT_BLKP(bp)  ((char *)(bp) + GET_SIZE(((char *)(bp) - WSIZE))) //line:vm:mm:nextblkp
 #define PREV_BLKP(bp)  ((char *)(bp) - GET_SIZE(((char *)(bp) - DSIZE))) //line:vm:mm:prevblkp
-
+/* $end mallocmacros */
 
 /* Global variables */
 static char *heap_listp = 0;  /* Pointer to first block */
 #ifdef NEXT_FIT
 static char *rover;           /* Next fit rover */
 #endif
+
 /* Function prototypes for internal helper routines */
 static void *extend_heap(size_t words);
 static void place(void *bp, size_t asize);
@@ -93,9 +59,26 @@ static void printblock(void *bp);
 static void checkheap(int verbose);
 static void checkblock(void *bp);
 
+/*********************************************************
+ * NOTE TO STUDENTS: Before you do anything else, please
+ * provide your team information in the following struct.
+ ********************************************************/
+team_t team = {
+        /* Team name */
+        "team",
+        /* First member's full name */
+        "Christina0031",
+        /* First member's email address */
+        "@zju.edu.cn",
+        /* Second member's full name (leave blank if none) */
+        "",
+        /* Second member's email address (leave blank if none) */
+        ""
+};
 /*
  * mm_init - Initialize the memory manager
  */
+/* $begin mminit */
 int mm_init(void)
 {
     /* Create the initial empty heap */
@@ -118,11 +101,13 @@ int mm_init(void)
         return -1;
     return 0;
 }
+/* $end mminit */
 
 /*
  * mm_malloc - Allocate a block with at least size bytes of payload
  */
-void *malloc(size_t size)
+/* $begin mmmalloc */
+void *mm_malloc(size_t size)
 {
     size_t asize;      /* Adjusted block size */
     size_t extendsize; /* Amount to extend heap if no fit */
@@ -156,11 +141,14 @@ void *malloc(size_t size)
     place(bp, asize);                                 //line:vm:mm:growheap3
     return bp;
 }
+/* $end mmmalloc */
 
 /*
  * mm_free - Free a block
  */
-void free(void *bp){
+/* $begin mmfree */
+void mm_free(void *bp)
+{
     /* $end mmfree */
     if (bp == 0)
         return;
@@ -177,6 +165,8 @@ void free(void *bp){
     PUT(FTRP(bp), PACK(size, 0));
     coalesce(bp);
 }
+
+/* $end mmfree */
 /*
  * coalesce - Boundary tag coalescing. Return ptr to coalesced block
  */
@@ -224,11 +214,9 @@ static void *coalesce(void *bp)
 /* $end mmfree */
 
 /*
- * realloc - Change the size of the block by mallocing a new block,
- *      copying its data, and freeing the old block.  I'm too lazy
- *      to do better.
+ * mm_realloc - Naive implementation of realloc
  */
-void *realloc(void *ptr, size_t size)
+void *mm_realloc(void *ptr, size_t size)
 {
     size_t oldsize;
     void *newptr;
@@ -263,27 +251,12 @@ void *realloc(void *ptr, size_t size)
 }
 
 /*
- * calloc - Allocate the block and set it to zero.
+ * mm_checkheap - Check the heap for correctness
  */
-void *calloc (size_t nmemb, size_t size)
+void mm_checkheap(int verbose)
 {
-  size_t bytes = nmemb * size;
-  void *newptr;
-
-  newptr = malloc(bytes);
-  memset(newptr, 0, bytes);
-
-  return newptr;
-}
-
-/*
- * mm_checkheap - There are no bugs in my code, so I don't need to check,
- *      so nah!
- */
-void mm_checkheap(int verbose){
     checkheap(verbose);
 }
-
 
 /*
  * The remaining routines are internal helper routines

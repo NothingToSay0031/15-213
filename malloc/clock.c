@@ -8,7 +8,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <sys/times.h>
 #include "clock.h"
@@ -22,7 +21,7 @@
  * You can verify this for yourself using gcc -v.
  *******************************************************/
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__)  
 /*******************************************************
  * Pentium versions of start_counter() and get_counter()
  *******************************************************/
@@ -181,26 +180,10 @@ double ovhd()
 }
 
 /* $begin mhz */
-/* Get the clock rate from /proc */
-double mhz_full(int verbose, int sleeptime __attribute__((unused)))
+/* Estimate the clock rate by measuring the cycles that elapse */ 
+/* while sleeping for sleeptime seconds */
+double mhz_full(int verbose, int sleeptime)
 {
-    static char buf[2048];
-
-    FILE *fp = fopen("/proc/cpuinfo", "r");
-    double mhz = 0.0;
-
-    while (fgets(buf, 2048, fp)) {
-	if (strstr(buf, "cpu MHz")) {
-	    sscanf(buf, "cpu MHz\t: %lf", &mhz);
-	    break;
-	}
-    }
-    fclose(fp);
-    if (verbose) 
-	printf("Processor clock rate ~= %.1f MHz\n", mhz);
-    return mhz;
-
-#if 0
     double rate;
 
     start_counter();
@@ -209,7 +192,6 @@ double mhz_full(int verbose, int sleeptime __attribute__((unused)))
     if (verbose) 
 	printf("Processor clock rate ~= %.1f MHz\n", rate);
     return rate;
-#endif
 }
 /* $end mhz */
 

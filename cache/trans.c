@@ -21,7 +21,7 @@ int is_transpose(int M, int N, int A[N][M], int B[M][N]);
  */
 char transpose_submit_desc[] = "Transpose submission";
 /*
- * Some attempt
+ * Some attempts
 void transpose_submatrix(int *a, int *b, int from_row, int to_row, int from_col, int to_col, int col, int row) {
     int tmp, blockHeight, blockLength;
     if ((to_col - from_col) > 8) {
